@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Data Structure Visualizer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-project-diagram"></i> Data Structure Visualizer</h1>
+                <div class="header-controls">
+                    <button class="btn btn-secondary" id="settingsBtn">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <div class="sidebar">
+                <div class="code-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-code"></i> Code Input</h3>
+                        <div class="code-controls">
+                            <select id="dataStructureType" class="form-select">
+                                <option value="linkedlist">Linked List</option>
+                                <option value="array">Array</option>
+                                <option value="bst">Binary Search Tree</option>
+                                <option value="graph">Graph</option>
+                                <option value="sorting">Sorting Algorithm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="code-editor-container">
+                        <textarea id="codeEditor" class="code-editor" placeholder="Enter your code here...">// Example: Linked List Operations
+class ListNode {
+    constructor(val) {
+        this.val = val;
+        this.next = null;
+    }
+}
+
+let head = new ListNode(1);
+head.next = new ListNode(2);
+head.next.next = new ListNode(3);
+
+// Insert at beginning
+let newNode = new ListNode(0);
+newNode.next = head;
+head = newNode;</textarea>
+                        <div class="code-line-highlight" id="codeLineHighlight"></div>
+                    </div>
+                    
+                    <div class="execution-controls">
+                        <button class="btn btn-primary" id="parseBtn">
+                            <i class="fas fa-play"></i> Parse & Visualize
+                        </button>
+                        <button class="btn btn-secondary" id="resetBtn">
+                            <i class="fas fa-refresh"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="explanation-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-info-circle"></i> Step Explanation</h3>
+                    </div>
+                    <div class="explanation-content" id="explanationContent">
+                        <p>Enter code above and click "Parse & Visualize" to begin the animation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization-area">
+                <div class="viz-header">
+                    <div class="playback-controls">
+                        <button class="control-btn" id="prevBtn" disabled>
+                            <i class="fas fa-step-backward"></i>
+                        </button>
+                        <button class="control-btn" id="playPauseBtn" disabled>
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="control-btn" id="nextBtn" disabled>
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                        <button class="control-btn" id="stopBtn" disabled>
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                    <div class="animation-info">
+                        <span class="step-counter" id="stepCounter">Step 0 / 0</span>
+                        <div class="speed-control">
+                            <label for="speedSlider">Speed:</label>
+                            <input type="range" id="speedSlider" min="0.5" max="3" step="0.5" value="1">
+                            <span id="speedValue">1x</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="visualizationCanvas" width="400" height="300"></canvas>
+                    <div class="canvas-overlay" id="canvasOverlay"></div>
+                </div>
+
+                <div class="data-structure-info" id="dataStructureInfo">
+                    <div class="info-panel">
+                        <h4>Data Structure Information</h4>
+                        <div id="structureDetails"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h4>Visualization</h4>
+                    <div class="setting-item">
+                        <label for="nodeSize">Node Size:</label>
+                        <input type="range" id="nodeSize" min="20" max="60" value="40">
+                        <span id="nodeSizeValue">40px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="animationDuration">Animation Duration:</label>
+                        <input type="range" id="animationDuration" min="300" max="2000" step="100" value="800">
+                        <span id="animationDurationValue">800ms</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="colorScheme">Color Scheme:</label>
+                        <select id="colorScheme">
+                            <option value="default">Default</option>
+                            <option value="dark">Dark</option>
+                            <option value="colorful">Colorful</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/codeParser.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/animationEngine.js"></script>
+    <script src="js/dataStructures/linkedList.js"></script>
+    <script src="js/dataStructures/array.js"></script>
+    <script src="js/dataStructures/binarySearchTree.js"></script>
+    <script src="js/dataStructures/graph.js"></script>
+    <script src="js/algorithms/sorting.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
