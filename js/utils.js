@@ -130,9 +130,13 @@ class Utils {
             const totalWidth = (nodes.length - 1) * spacing;
             const totalHeight = (nodes.length - 1) * spacing;
 
+            // Use display dimensions if available, otherwise fall back to canvas dimensions
+            const canvasWidth = canvas.displayWidth || canvas.width;
+            const canvasHeight = canvas.displayHeight || canvas.height;
+
             if (direction === 'horizontal') {
-                const startX = (canvas.width - totalWidth) / 2;
-                const y = canvas.height / 2;
+                const startX = (canvasWidth - totalWidth) / 2;
+                const y = canvasHeight / 2;
                 
                 nodes.forEach((node, index) => {
                     positions.push({
@@ -142,8 +146,8 @@ class Utils {
                     });
                 });
             } else {
-                const x = canvas.width / 2;
-                const startY = (canvas.height - totalHeight) / 2;
+                const x = canvasWidth / 2;
+                const startY = (canvasHeight - totalHeight) / 2;
                 
                 nodes.forEach((node, index) => {
                     positions.push({
@@ -165,6 +169,10 @@ class Utils {
             const nodeSize = parseInt(localStorage.getItem('nodeSize') || '40');
             const levelHeight = nodeSize * 3;
             const minSpacing = nodeSize * 2;
+            
+            // Use display dimensions if available
+            const canvasWidth = canvas.displayWidth || canvas.width;
+            const canvasHeight = canvas.displayHeight || canvas.height;
 
             // Find root node
             const root = rootId ? nodes.find(n => n.id === rootId) : nodes[0];
@@ -202,12 +210,12 @@ class Utils {
             levels.forEach((levelNodes, level) => {
                 const y = 50 + level * levelHeight;
                 const levelWidth = Math.pow(2, level) * minSpacing;
-                const startX = (canvas.width - levelWidth) / 2;
+                const startX = (canvasWidth - levelWidth) / 2;
 
                 levelNodes.forEach(({node, position}) => {
                     const x = startX + (position + 0.5) * (levelWidth / Math.pow(2, level));
                     positions.push({
-                        x: Math.max(nodeSize, Math.min(canvas.width - nodeSize, x)),
+                        x: Math.max(nodeSize, Math.min(canvasWidth - nodeSize, x)),
                         y: y,
                         id: node.id,
                         level: level
@@ -225,8 +233,12 @@ class Utils {
             const cols = Math.ceil(Math.sqrt(nodes.length));
             const rows = Math.ceil(nodes.length / cols);
             
-            const cellWidth = (canvas.width - 100) / cols;
-            const cellHeight = (canvas.height - 100) / rows;
+            // Use display dimensions if available
+            const canvasWidth = canvas.displayWidth || canvas.width;
+            const canvasHeight = canvas.displayHeight || canvas.height;
+            
+            const cellWidth = (canvasWidth - 100) / cols;
+            const cellHeight = (canvasHeight - 100) / rows;
 
             nodes.forEach((node, index) => {
                 const row = Math.floor(index / cols);
@@ -247,12 +259,16 @@ class Utils {
             const positions = new Map();
             const velocities = new Map();
             const nodeSize = parseInt(localStorage.getItem('nodeSize') || '40');
+            
+            // Use display dimensions if available
+            const canvasWidth = canvas.displayWidth || canvas.width;
+            const canvasHeight = canvas.displayHeight || canvas.height;
 
             // Initialize random positions
             nodes.forEach(node => {
                 positions.set(node.id, {
-                    x: Math.random() * (canvas.width - 100) + 50,
-                    y: Math.random() * (canvas.height - 100) + 50
+                    x: Math.random() * (canvasWidth - 100) + 50,
+                    y: Math.random() * (canvasHeight - 100) + 50
                 });
                 velocities.set(node.id, {x: 0, y: 0});
             });
@@ -329,8 +345,8 @@ class Utils {
                     pos.y += vel.y;
                     
                     // Keep within bounds
-                    pos.x = Math.max(nodeSize, Math.min(canvas.width - nodeSize, pos.x));
-                    pos.y = Math.max(nodeSize, Math.min(canvas.height - nodeSize, pos.y));
+                    pos.x = Math.max(nodeSize, Math.min(canvasWidth - nodeSize, pos.x));
+                    pos.y = Math.max(nodeSize, Math.min(canvasHeight - nodeSize, pos.y));
                 });
             }
 

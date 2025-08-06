@@ -22,6 +22,40 @@ class DataStructureVisualizer {
         
         // Setup window resize handler
         window.addEventListener('resize', this.handleResize.bind(this));
+        
+        // Mobile-specific optimizations
+        this.setupMobileOptimizations();
+    }
+
+    setupMobileOptimizations() {
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Prevent pull-to-refresh on mobile
+        document.body.style.overscrollBehavior = 'none';
+        
+        // Optimize for mobile browsers
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            // Reduce animation complexity on mobile
+            localStorage.setItem('mobileMode', 'true');
+            
+            // Reduce default node size for mobile
+            if (!localStorage.getItem('nodeSize')) {
+                localStorage.setItem('nodeSize', '32');
+            }
+            
+            // Increase animation duration for better visibility on mobile
+            if (!localStorage.getItem('animationDuration')) {
+                localStorage.setItem('animationDuration', '1000');
+            }
+        }
     }
 
     setupEventListeners() {
@@ -243,7 +277,11 @@ class DataStructureVisualizer {
 
     handleResize() {
         if (this.visualizer) {
-            this.visualizer.resize();
+            // Debounce resize events for better performance on mobile
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => {
+                this.visualizer.resize();
+            }, 150);
         }
     }
 

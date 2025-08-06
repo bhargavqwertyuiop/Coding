@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Test - Data Structure Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .test-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 5px;
+        }
+        .status {
+            font-weight: bold;
+            color: #2d5a87;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📱 Mobile Compatibility Test</h1>
+        
+        <div class="test-item">
+            <div class="status">Viewport:</div>
+            <div id="viewport"></div>
+        </div>
+        
+        <div class="test-item">
+            <div class="status">User Agent:</div>
+            <div id="userAgent"></div>
+        </div>
+        
+        <div class="test-item">
+            <div class="status">Touch Support:</div>
+            <div id="touchSupport"></div>
+        </div>
+        
+        <div class="test-item">
+            <div class="status">Device Pixel Ratio:</div>
+            <div id="dpr"></div>
+        </div>
+        
+        <button onclick="testTouch()">Test Touch Events</button>
+        <div id="touchResult"></div>
+        
+        <button onclick="window.location.href='index.html'">Launch Full App</button>
+        
+        <div class="test-item">
+            <div class="status">Recommendations:</div>
+            <ul>
+                <li>Use landscape mode for better viewing</li>
+                <li>Ensure stable internet connection</li>
+                <li>Close other apps for better performance</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Display device information
+        document.getElementById('viewport').textContent = 
+            `${window.innerWidth} x ${window.innerHeight}`;
+        
+        document.getElementById('userAgent').textContent = 
+            navigator.userAgent.substring(0, 80) + '...';
+        
+        document.getElementById('touchSupport').textContent = 
+            'ontouchstart' in window ? '✅ Yes' : '❌ No';
+        
+        document.getElementById('dpr').textContent = 
+            window.devicePixelRatio || 1;
+
+        function testTouch() {
+            const result = document.getElementById('touchResult');
+            result.innerHTML = '<div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px;">Tap anywhere on this page to test touch events...</div>';
+            
+            let touchCount = 0;
+            const touchHandler = (e) => {
+                touchCount++;
+                result.innerHTML = `<div style="background: #d1e7dd; padding: 10px; margin: 10px 0; border-radius: 5px;">✅ Touch test successful! Touches detected: ${touchCount}</div>`;
+                
+                if (touchCount >= 3) {
+                    document.removeEventListener('touchstart', touchHandler);
+                    setTimeout(() => {
+                        result.innerHTML += '<div style="background: #d1e7dd; padding: 10px; margin: 10px 0; border-radius: 5px;">🎉 Touch events are working properly!</div>';
+                    }, 1000);
+                }
+            };
+            
+            document.addEventListener('touchstart', touchHandler);
+            
+            setTimeout(() => {
+                if (touchCount === 0) {
+                    result.innerHTML = '<div style="background: #f8d7da; padding: 10px; margin: 10px 0; border-radius: 5px;">⚠️ No touch events detected. Try tapping the screen.</div>';
+                }
+            }, 5000);
+        }
+
+        // Auto-refresh viewport info on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                document.getElementById('viewport').textContent = 
+                    `${window.innerWidth} x ${window.innerHeight}`;
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -34,20 +34,38 @@ class Visualizer {
 
     // Setup canvas and event listeners
     setupCanvas() {
-        // Handle high DPI displays
-        const rect = this.canvas.getBoundingClientRect();
+        // Handle high DPI displays and mobile devices
+        const container = this.canvas.parentElement;
+        const containerRect = container.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
-        this.canvas.style.width = rect.width + 'px';
-        this.canvas.style.height = rect.height + 'px';
+        // Set canvas size based on container and device
+        const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+        const maxWidth = isMobile ? Math.min(containerRect.width - 20, 350) : Math.min(containerRect.width - 40, 800);
+        const maxHeight = isMobile ? Math.min(containerRect.height - 20, 250) : Math.min(containerRect.height - 40, 600);
+        
+        const width = Math.max(maxWidth, 250); // Minimum width
+        const height = Math.max(maxHeight, 200); // Minimum height
+        
+        this.canvas.width = width * dpr;
+        this.canvas.height = height * dpr;
+        this.canvas.style.width = width + 'px';
+        this.canvas.style.height = height + 'px';
         
         this.ctx.scale(dpr, dpr);
         
-        // Add click event listener for interaction
+        // Set actual canvas display size for calculations
+        this.canvas.displayWidth = width;
+        this.canvas.displayHeight = height;
+        
+        // Add event listeners for both mouse and touch
         this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
         this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+        
+        // Touch events for mobile
+        this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+        this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
     }
 
     // Initialize visualization with parsed code
@@ -273,6 +291,49 @@ class Visualizer {
         const y = event.clientY - rect.top;
         
         this.currentStructure.handleMouseMove(x, y);
+    }
+
+    // Handle touch start events
+    handleTouchStart(event) {
+        event.preventDefault();
+        this.lastTouchX = null;
+        this.lastTouchY = null;
+        
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            this.lastTouchX = touch.clientX - rect.left;
+            this.lastTouchY = touch.clientY - rect.top;
+        }
+    }
+
+    // Handle touch move events
+    handleTouchMove(event) {
+        event.preventDefault();
+        
+        if (event.touches.length === 1 && this.currentStructure && this.currentStructure.handleMouseMove) {
+            const touch = event.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            this.currentStructure.handleMouseMove(x, y);
+        }
+    }
+
+    // Handle touch end events
+    handleTouchEnd(event) {
+        event.preventDefault();
+        
+        if (this.lastTouchX !== null && this.lastTouchY !== null) {
+            // Simulate click if touch didn't move much
+            if (this.currentStructure && this.currentStructure.handleClick) {
+                this.currentStructure.handleClick(this.lastTouchX, this.lastTouchY);
+            }
+        }
+        
+        this.lastTouchX = null;
+        this.lastTouchY = null;
     }
 
     // Show error message
